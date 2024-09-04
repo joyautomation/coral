@@ -9,7 +9,17 @@ import {
   bgWhite,
 } from "jsr:@std/fmt@1.0.1/colors";
 
+/**
+ * Formats a Date object into a string representation.
+ * @param {Date} date - The date to format.
+ * @returns {string} A formatted date string in the format "YYYY-MM-DD HH:MM:SS".
+ */
 const formatDate = (date: Date): string => {
+  /**
+   * Pads a number with leading zeros to ensure it's at least 2 digits long.
+   * @param {number} num - The number to pad.
+   * @returns {string} The padded number as a string.
+   */
   const pad = (num: number): string => num.toString().padStart(2, "0");
 
   const year = date.getFullYear();
@@ -22,6 +32,9 @@ const formatDate = (date: Date): string => {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
+/**
+ * Object containing color functions for text and background.
+ */
 export const colors = {
   red,
   yellow,
@@ -33,6 +46,9 @@ export const colors = {
   bgWhite,
 };
 
+/**
+ * Enum representing different log levels.
+ */
 export enum LogLevel {
   debug = "debug",
   info = "info",
@@ -40,25 +56,46 @@ export enum LogLevel {
   error = "error",
 }
 
+/**
+ * Interface for a logger object.
+ */
 export type Log = {
+  /** The context string for the logger. */
   context: string;
+  /** Logs a debug message. */
   debug(...args: unknown[]): void;
+  /** Logs an info message. */
   info(...args: unknown[]): void;
+  /** Logs a warning message. */
   warn(...args: unknown[]): void;
+  /** Logs an error message. */
   error(...args: unknown[]): void;
 };
 
+/**
+ * Interface for a log level filter object.
+ */
 export type LogLevelFilter = {
+  /** The filter level. */
   filter: number;
+  /** Function to set the text color. */
   setColor: typeof white;
+  /** Function to set the background color. */
   setBackgroundColor: typeof bgWhite;
+  /** The corresponding LogLevel key. */
   key: LogLevel;
 };
 
+/**
+ * Type representing all log levels and their corresponding filters.
+ */
 export type LogLevels = {
   [key in LogLevel]: LogLevelFilter;
 };
 
+/**
+ * Object containing configurations for each log level.
+ */
 export const logLevels: LogLevels = {
   [LogLevel.debug]: {
     filter: 0,
@@ -86,9 +123,21 @@ export const logLevels: LogLevels = {
   },
 };
 
+/**
+ * Checks if a given log level should be displayed based on the current log level.
+ * @param {LogLevel} currentLevel - The current log level.
+ * @param {LogLevel} level - The log level to check against.
+ * @returns {boolean} True if the log should be displayed, false otherwise.
+ */
 export const checkLevel = (currentLevel: LogLevel, level: LogLevel): boolean =>
   logLevels[level].filter >= logLevels[currentLevel].filter;
 
+/**
+ * Creates a logger object with the specified context and log level.
+ * @param {string} context - The context string for the logger.
+ * @param {LogLevel} currentLevel - The current log level for filtering logs.
+ * @returns {Log} A logger object with methods for each log level.
+ */
 export const createLogger = (context: string, currentLevel: LogLevel): Log => {
   const logger: Partial<Log> = {};
 
