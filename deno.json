@@ -2,7 +2,7 @@
   "name": "@joyautomation/coral",
   "description": "A simple logging library for Project Kraken",
   "repository": "https://github.com/joyautomation/coral",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "exports": "./index.ts",
   "tasks": {
     "dev": "deno run --watch main.ts"
