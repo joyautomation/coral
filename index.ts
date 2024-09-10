@@ -169,6 +169,7 @@ export const createLogger = (context: string, currentLevel: LogLevel): Log => {
  * @param {Log} log - The logger object to modify.
  * @param {LogLevel} level - The new log level to set.
  */
-export const setLogLevel = (log: Log, level: LogLevel) => {
+export const setLogLevel = (log: Log, level: LogLevel): Log => {
   log.currentLevel = level;
+  return log;
 };
