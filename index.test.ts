@@ -7,6 +7,7 @@ import {
 } from "jsr:@std/testing/mock";
 import {
   createLogger,
+  deriveContextString,
   LogLevel,
   type LogLevels,
   logLevels,
@@ -14,6 +15,7 @@ import {
 } from "../coral/index.ts";
 import * as R from "npm:ramda";
 import { colors } from "../coral/index.ts";
+import { assertEquals } from "@std/assert/equals";
 
 const logTestMessages = (level: LogLevel) => {
   const log = createLogger("test", level);
@@ -116,5 +118,14 @@ describe("log", () => {
     assertSpyCalls(infoStub, 0);
     assertSpyCalls(warnStub, 1);
     assertSpyCalls(errorStub, 1);
+  });
+
+  it("it derives the context string", () => {
+    assertEquals(deriveContextString("1234"), "1234            ");
+    assertEquals(deriveContextString("12345678901234"), "12345678901234  ");
+    assertEquals(
+      deriveContextString("12345678901234567890"),
+      "1234567890123...",
+    );
   });
 });

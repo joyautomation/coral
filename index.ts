@@ -153,8 +153,9 @@ export const createLogger = (context: string, currentLevel: LogLevel): Log => {
       if (logger.currentLevel && checkLevel(logger.currentLevel, logLevel)) {
         console[logLevel](
           setColor(formatDate(new Date())),
-          setColor(`| ${context}`),
-          "\t",
+          setColor(
+            `| ${deriveContextString(context)}`,
+          ),
           ...args.map((arg) => setColor(`${arg}`)),
         );
       }
@@ -172,4 +173,21 @@ export const createLogger = (context: string, currentLevel: LogLevel): Log => {
 export const setLogLevel = (log: Log, level: LogLevel): Log => {
   log.currentLevel = level;
   return log;
+};
+
+/**
+ * Derives a formatted context string for logging purposes.
+ *
+ * @param {string} context - The original context string.
+ * @returns {string} A formatted context string:
+ *   - If length <= 8, padded to 16 characters with tabs.
+ *   - If length <= 16, padded to 16 characters with spaces.
+ *   - If length > 16, truncated to 13 characters with "..." appended.
+ */
+export const deriveContextString = (context: string): string => {
+  return context.length <= 8
+    ? context.padEnd(16, " ")
+    : context.length <= 16
+    ? context.padEnd(16, " ")
+    : context.slice(0, 13) + "...";
 };
