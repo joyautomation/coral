@@ -1,10 +1,10 @@
-import { describe, it } from "jsr:@std/testing/bdd";
+import { describe, it } from "@std/testing/bdd";
 import {
   assertSpyCall,
   assertSpyCalls,
   spy,
   stub,
-} from "jsr:@std/testing/mock";
+} from "@std/testing/mock";
 import {
   createLogger,
   deriveContextString,
