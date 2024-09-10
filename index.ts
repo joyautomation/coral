@@ -7,7 +7,7 @@ import {
   red,
   white,
   yellow,
-} from "jsr:@std/fmt@1.0.1/colors";
+} from "@std/fmt/colors";
 
 /**
  * Formats a Date object into a string representation.
