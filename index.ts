@@ -1,12 +1,12 @@
 import {
-  red,
-  yellow,
-  cyan,
-  white,
   bgCyan,
-  bgYellow,
   bgRed,
   bgWhite,
+  bgYellow,
+  cyan,
+  red,
+  white,
+  yellow,
 } from "jsr:@std/fmt@1.0.1/colors";
 
 /**
@@ -62,6 +62,8 @@ export enum LogLevel {
 export type Log = {
   /** The context string for the logger. */
   context: string;
+  /** The current log level. */
+  currentLevel: LogLevel;
   /** Logs a debug message. */
   debug(...args: unknown[]): void;
   /** Logs an info message. */
@@ -139,23 +141,34 @@ export const checkLevel = (currentLevel: LogLevel, level: LogLevel): boolean =>
  * @returns {Log} A logger object with methods for each log level.
  */
 export const createLogger = (context: string, currentLevel: LogLevel): Log => {
-  const logger: Partial<Log> = {};
+  const logger: Partial<Log> = {
+    currentLevel,
+  };
 
   Object.keys(logLevels).forEach((key) => {
     const logLevel = key as LogLevel;
     const { setColor } = logLevels[logLevel];
 
     logger[logLevel] = (...args: unknown[]): void => {
-      if (checkLevel(currentLevel, logLevel)) {
+      if (logger.currentLevel && checkLevel(logger.currentLevel, logLevel)) {
         console[logLevel](
           setColor(formatDate(new Date())),
           setColor(`| ${context}`),
           "\t",
-          ...args.map((arg) => setColor(`${arg}`))
+          ...args.map((arg) => setColor(`${arg}`)),
         );
       }
     };
   });
 
   return { ...logger, context } as Log;
+};
+
+/**
+ * Sets the log level for a given logger.
+ * @param {Log} log - The logger object to modify.
+ * @param {LogLevel} level - The new log level to set.
+ */
+export const setLogLevel = (log: Log, level: LogLevel) => {
+  log.currentLevel = level;
 };
