@@ -60,6 +60,8 @@ export enum LogLevel {
  * Interface for a logger object.
  */
 export type Log = {
+  /** Whether the log is enabled. */
+  enabled: boolean;
   /** The context string for the logger. */
   context: string;
   /** The current log level. */
@@ -82,8 +84,6 @@ export type LogLevelFilter = {
   filter: number;
   /** Function to set the text color. */
   setColor: typeof white;
-  /** Function to set the background color. */
-  setBackgroundColor: typeof bgWhite;
   /** The corresponding LogLevel key. */
   key: LogLevel;
 };
@@ -102,25 +102,21 @@ export const logLevels: LogLevels = {
   [LogLevel.debug]: {
     filter: 0,
     setColor: (input: string) => colors.cyan(input),
-    setBackgroundColor: (input: string) => colors.bgCyan(input),
     key: LogLevel.debug,
   },
   [LogLevel.info]: {
     filter: 1,
     setColor: (input: string) => colors.white(input),
-    setBackgroundColor: (input: string) => colors.bgWhite(input),
     key: LogLevel.info,
   },
   [LogLevel.warn]: {
     filter: 2,
     setColor: (input: string) => colors.yellow(input),
-    setBackgroundColor: (input: string) => colors.bgYellow(input),
     key: LogLevel.warn,
   },
   [LogLevel.error]: {
     filter: 3,
     setColor: (input: string) => colors.red(input),
-    setBackgroundColor: (input: string) => colors.bgRed(input),
     key: LogLevel.error,
   },
 };
@@ -142,15 +138,18 @@ export const checkLevel = (currentLevel: LogLevel, level: LogLevel): boolean =>
  */
 export const createLogger = (context: string, currentLevel: LogLevel): Log => {
   const logger: Partial<Log> = {
+    enabled: true,
     currentLevel,
   };
 
   Object.keys(logLevels).forEach((key) => {
     const logLevel = key as LogLevel;
     const { setColor } = logLevels[logLevel];
-
     logger[logLevel] = (...args: unknown[]): void => {
-      if (logger.currentLevel && checkLevel(logger.currentLevel, logLevel)) {
+      if (
+        logger.enabled && logger.currentLevel &&
+        checkLevel(logger.currentLevel, logLevel)
+      ) {
         console[logLevel](
           setColor(formatDate(new Date())),
           setColor(
@@ -162,7 +161,8 @@ export const createLogger = (context: string, currentLevel: LogLevel): Log => {
     };
   });
 
-  return { ...logger, context } as Log;
+  logger.context = context;
+  return logger as Log;
 };
 
 /**
@@ -172,6 +172,17 @@ export const createLogger = (context: string, currentLevel: LogLevel): Log => {
  */
 export const setLogLevel = (log: Log, level: LogLevel): Log => {
   log.currentLevel = level;
+  return log;
+};
+
+/**
+ * Sets the enabled state of a logger.
+ * @param {Log} log - The logger object to modify.
+ * @param {boolean} enabled - Whether the logger should be enabled.
+ * @returns {Log} The modified logger object.
+ */
+export const setEnabled = (log: Log, enabled: boolean): Log => {
+  log.enabled = enabled;
   return log;
 };
 
