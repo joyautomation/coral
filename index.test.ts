@@ -1,16 +1,12 @@
 import { describe, it } from "@std/testing/bdd";
-import {
-  assertSpyCall,
-  assertSpyCalls,
-  spy,
-  stub,
-} from "@std/testing/mock";
+import { assertSpyCall, assertSpyCalls, spy, stub } from "@std/testing/mock";
 import {
   createLogger,
   deriveContextString,
   LogLevel,
   type LogLevels,
   logLevels,
+  setEnabled,
   setLogLevel,
 } from "../coral/index.ts";
 import * as R from "npm:ramda";
@@ -127,5 +123,22 @@ describe("log", () => {
       deriveContextString("12345678901234567890"),
       "1234567890123...",
     );
+  });
+
+  it("if disabled, it does not log", () => {
+    using debugStub = stub(console, "debug");
+    using infoStub = stub(console, "info");
+    using warnStub = stub(console, "warn");
+    using errorStub = stub(console, "error");
+    const log = createLogger("test", LogLevel.info);
+    setEnabled(log, false);
+    log.debug("this is a debug message");
+    log.info("this is an info message");
+    log.warn("this is a warn message");
+    log.error("this is an error message");
+    assertSpyCalls(debugStub, 0);
+    assertSpyCalls(infoStub, 0);
+    assertSpyCalls(warnStub, 0);
+    assertSpyCalls(errorStub, 0);
   });
 });
